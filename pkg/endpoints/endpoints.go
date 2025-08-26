@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"spacetraders-client/pkg/schema"
-	"spacetraders-client/pkg/transport"
+	"github.com/JoeEdwardsCode/spacetraders-client/pkg/schema"
+	"github.com/JoeEdwardsCode/spacetraders-client/pkg/transport"
 	"strconv"
 )
 

@@ -1,16 +1,25 @@
-# SpaceTraders Golang API Client
+# SpaceTraders Go Client
 
-A comprehensive Golang API client for the SpaceTraders API with complete functionality, built-in rate limiting, and comprehensive testing.
+[![Go Reference](https://pkg.go.dev/badge/github.com/JoeEdwardsCode/spacetraders-client.svg)](https://pkg.go.dev/github.com/JoeEdwardsCode/spacetraders-client)
+[![Go Report Card](https://goreportcard.com/badge/github.com/JoeEdwardsCode/spacetraders-client)](https://goreportcard.com/report/github.com/JoeEdwardsCode/spacetraders-client)
+
+A comprehensive Go client library for the [SpaceTraders API](https://spacetraders.io/), a space trading game where you control automated ships, trade resources, and explore the galaxy.
 
 ## Features
 
-- **Complete API Coverage**: Generated from OpenAPI specification
-- **Zero External Dependencies**: Uses only Go standard library
-- **Smart Rate Limiting**: Built-in compliance with API limits (2 req/sec, 30 burst)
-- **Fleet Management**: Multi-ship coordination and optimization
-- **Mock Server**: Comprehensive testing with business logic simulation
-- **Caching Layer**: Intelligent caching with TTL management
-- **Resilience**: Circuit breakers, retry logic, and graceful degradation
+- **Complete API Coverage**: Full implementation of SpaceTraders API v2
+- **Zero External Dependencies**: Uses only Go standard library  
+- **Thread-Safe**: Concurrent operations with proper synchronization
+- **Rate Limiting**: Built-in compliance with API rate limits (2 req/sec, 30 burst)
+- **Mock Server**: Comprehensive testing with realistic game logic simulation
+- **Context Support**: Timeout and cancellation support for all operations
+- **Comprehensive Testing**: Unit and integration tests with mock server
+
+## Installation
+
+```bash
+go get github.com/JoeEdwardsCode/spacetraders-client
+```
 
 ## Quick Start
 
@@ -18,25 +27,57 @@ A comprehensive Golang API client for the SpaceTraders API with complete functio
 package main
 
 import (
+    "context"
     "log"
-    "spacetraders-client/pkg/client"
+    "github.com/JoeEdwardsCode/spacetraders-client/pkg/client"
 )
 
 func main() {
+    // Create a client with default configuration
     config := client.DefaultConfig()
     client, err := client.New(config)
     if err != nil {
         log.Fatal(err)
     }
+    defer client.Close()
+
+    ctx := context.Background()
 
     // Register a new agent
-    agent, err := client.RegisterAgent("MY_CALLSIGN", "COSMIC")
+    resp, err := client.RegisterAgent(ctx, "MY_CALLSIGN", "COSMIC")
     if err != nil {
         log.Fatal(err)
     }
 
-    log.Printf("Registered agent: %s", agent.Symbol)
+    log.Printf("Registered agent: %s", resp.Agent.Symbol)
+    log.Printf("Starting credits: %d", resp.Agent.Credits)
+    log.Printf("Starting ship: %s", resp.Ship.Symbol)
+
+    // Get your fleet
+    ships, err := client.GetFleet(ctx, nil)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    log.Printf("Fleet size: %d ships", len(ships))
+    for _, ship := range ships {
+        log.Printf("- %s (%s) at %s", ship.Symbol, ship.Registration.Role, ship.Nav.WaypointSymbol)
+    }
 }
+```
+
+## Using with an Existing Token
+
+```go
+config := client.DefaultConfig()
+config.Token = "your-existing-token"  // Set your existing token
+client, err := client.New(config)
+if err != nil {
+    log.Fatal(err)
+}
+
+// You can also set the token later
+client.SetToken("your-token")
 ```
 
 ## Project Structure

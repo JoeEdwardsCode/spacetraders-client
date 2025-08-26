@@ -2,10 +2,10 @@ package mock
 
 import (
 	"encoding/json"
+	"github.com/JoeEdwardsCode/spacetraders-client/internal/ratelimit"
+	"github.com/JoeEdwardsCode/spacetraders-client/pkg/schema"
 	"net/http"
 	"net/http/httptest"
-	"spacetraders-client/internal/ratelimit"
-	"spacetraders-client/pkg/schema"
 	"strconv"
 	"strings"
 	"sync"
@@ -29,12 +29,12 @@ type GameState struct {
 	Systems   map[string]*schema.System   `json:"systems"`
 	Waypoints map[string]*schema.Waypoint `json:"waypoints"`
 	Tokens    map[string]string           `json:"tokens"` // token -> agent symbol
-	
+
 	// Business logic state
-	FuelPrices    map[string]int `json:"fuel_prices"`    // waypoint -> price
-	MarketPrices  map[string]map[string]int `json:"market_prices"` // waypoint -> good -> price
-	TravelTimes   map[string]map[string]time.Duration `json:"travel_times"` // origin -> destination -> time
-	LastUpdate    time.Time `json:"last_update"`
+	FuelPrices   map[string]int                      `json:"fuel_prices"`   // waypoint -> price
+	MarketPrices map[string]map[string]int           `json:"market_prices"` // waypoint -> good -> price
+	TravelTimes  map[string]map[string]time.Duration `json:"travel_times"`  // origin -> destination -> time
+	LastUpdate   time.Time                           `json:"last_update"`
 }
 
 // NewMockServer creates a new mock SpaceTraders API server
@@ -92,17 +92,17 @@ func (m *MockServer) SetRateLimitEnabled(enabled bool) {
 func (m *MockServer) setupRoutes(mux *http.ServeMux) {
 	// Agent registration (no auth middleware)
 	mux.HandleFunc("/register", m.withRateLimit(m.handleRegister))
-	
+
 	// Agent operations (with auth middleware)
 	mux.HandleFunc("/my/agent", m.withMiddleware(m.handleGetAgent))
-	
+
 	// Ship operations (with auth middleware)
 	mux.HandleFunc("/my/ships", m.withMiddleware(m.handleGetFleet))
 	mux.HandleFunc("/my/ships/", m.withMiddleware(m.handleShipOperations))
-	
+
 	// Market operations (with auth middleware)
 	mux.HandleFunc("/systems/", m.withMiddleware(m.handleSystemOperations))
-	
+
 	// Contract operations (with auth middleware)
 	mux.HandleFunc("/my/contracts", m.withMiddleware(m.handleGetContracts))
 	mux.HandleFunc("/my/contracts/", m.withMiddleware(m.handleContractOperations))
@@ -260,7 +260,7 @@ func (m *MockServer) handleShipOperations(w http.ResponseWriter, r *http.Request
 	}
 
 	shipSymbol := pathParts[2]
-	
+
 	if len(pathParts) == 3 {
 		// GET /my/ships/{shipSymbol}
 		if r.Method == http.MethodGet {

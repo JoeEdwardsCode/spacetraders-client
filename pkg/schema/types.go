@@ -39,11 +39,11 @@ type Registration struct {
 
 // Navigation contains ship navigation information
 type Navigation struct {
-	SystemSymbol   string         `json:"systemSymbol"`
-	WaypointSymbol string         `json:"waypointSymbol"`
-	Route          Route          `json:"route"`
-	Status         string         `json:"status"`
-	FlightMode     string         `json:"flightMode"`
+	SystemSymbol   string `json:"systemSymbol"`
+	WaypointSymbol string `json:"waypointSymbol"`
+	Route          Route  `json:"route"`
+	Status         string `json:"status"`
+	FlightMode     string `json:"flightMode"`
 }
 
 // Route represents a navigation route
@@ -75,15 +75,15 @@ type Crew struct {
 
 // Frame represents ship frame information
 type Frame struct {
-	Symbol         string              `json:"symbol"`
-	Name           string              `json:"name"`
-	Description    string              `json:"description"`
-	Condition      int                 `json:"condition"`
-	Integrity      int                 `json:"integrity"`
-	ModuleSlots    int                 `json:"moduleSlots"`
-	MountingPoints int                 `json:"mountingPoints"`
-	FuelCapacity   int                 `json:"fuelCapacity"`
-	Requirements   ShipRequirements    `json:"requirements"`
+	Symbol         string           `json:"symbol"`
+	Name           string           `json:"name"`
+	Description    string           `json:"description"`
+	Condition      int              `json:"condition"`
+	Integrity      int              `json:"integrity"`
+	ModuleSlots    int              `json:"moduleSlots"`
+	MountingPoints int              `json:"mountingPoints"`
+	FuelCapacity   int              `json:"fuelCapacity"`
+	Requirements   ShipRequirements `json:"requirements"`
 }
 
 // Reactor represents ship reactor information
@@ -136,9 +136,9 @@ type ShipRequirements struct {
 
 // Cargo represents ship cargo information
 type Cargo struct {
-	Capacity  int           `json:"capacity"`
-	Units     int           `json:"units"`
-	Inventory []CargoItem   `json:"inventory"`
+	Capacity  int         `json:"capacity"`
+	Units     int         `json:"units"`
+	Inventory []CargoItem `json:"inventory"`
 }
 
 // CargoItem represents an item in cargo
@@ -164,14 +164,14 @@ type FuelUsed struct {
 
 // Contract represents a SpaceTraders contract
 type Contract struct {
-	ID               string           `json:"id"`
-	FactionSymbol    string           `json:"factionSymbol"`
-	Type             string           `json:"type"`
-	Terms            ContractTerms    `json:"terms"`
-	Accepted         bool             `json:"accepted"`
-	Fulfilled        bool             `json:"fulfilled"`
-	Expiration       time.Time        `json:"expiration"`
-	DeadlineToAccept *time.Time       `json:"deadlineToAccept,omitempty"`
+	ID               string        `json:"id"`
+	FactionSymbol    string        `json:"factionSymbol"`
+	Type             string        `json:"type"`
+	Terms            ContractTerms `json:"terms"`
+	Accepted         bool          `json:"accepted"`
+	Fulfilled        bool          `json:"fulfilled"`
+	Expiration       time.Time     `json:"expiration"`
+	DeadlineToAccept *time.Time    `json:"deadlineToAccept,omitempty"`
 }
 
 // ContractTerms represents contract terms
@@ -197,24 +197,24 @@ type ContractDeliverGood struct {
 
 // Market represents a SpaceTraders market
 type Market struct {
-	Symbol       string      `json:"symbol"`
-	Exports      []TradeGood `json:"exports"`
-	Imports      []TradeGood `json:"imports"`
-	Exchange     []TradeGood `json:"exchange"`
+	Symbol       string        `json:"symbol"`
+	Exports      []TradeGood   `json:"exports"`
+	Imports      []TradeGood   `json:"imports"`
+	Exchange     []TradeGood   `json:"exchange"`
 	Transactions []Transaction `json:"transactions,omitempty"`
-	TradeGoods   []TradeGood `json:"tradeGoods,omitempty"`
+	TradeGoods   []TradeGood   `json:"tradeGoods,omitempty"`
 }
 
 // TradeGood represents a tradeable good
 type TradeGood struct {
-	Symbol        string `json:"symbol"`
-	Name          string `json:"name"`
-	Description   string `json:"description"`
-	Type          string `json:"type,omitempty"`
-	TradeVolume   *int   `json:"tradeVolume,omitempty"`
+	Symbol        string  `json:"symbol"`
+	Name          string  `json:"name"`
+	Description   string  `json:"description"`
+	Type          string  `json:"type,omitempty"`
+	TradeVolume   *int    `json:"tradeVolume,omitempty"`
 	Supply        *string `json:"supply,omitempty"`
-	PurchasePrice *int   `json:"purchasePrice,omitempty"`
-	SellPrice     *int   `json:"sellPrice,omitempty"`
+	PurchasePrice *int    `json:"purchasePrice,omitempty"`
+	SellPrice     *int    `json:"sellPrice,omitempty"`
 }
 
 // Transaction represents a market transaction
@@ -242,16 +242,16 @@ type System struct {
 
 // Waypoint represents a waypoint in a system
 type Waypoint struct {
-	Symbol       string    `json:"symbol"`
-	Type         string    `json:"type"`
-	SystemSymbol string    `json:"systemSymbol"`
-	X            int       `json:"x"`
-	Y            int       `json:"y"`
-	Orbitals     []Orbital `json:"orbitals"`
-	Traits       []Trait   `json:"traits"`
+	Symbol       string     `json:"symbol"`
+	Type         string     `json:"type"`
+	SystemSymbol string     `json:"systemSymbol"`
+	X            int        `json:"x"`
+	Y            int        `json:"y"`
+	Orbitals     []Orbital  `json:"orbitals"`
+	Traits       []Trait    `json:"traits"`
 	Modifiers    []Modifier `json:"modifiers,omitempty"`
-	Chart        *Chart    `json:"chart,omitempty"`
-	Faction      *Faction  `json:"faction,omitempty"`
+	Chart        *Chart     `json:"chart,omitempty"`
+	Faction      *Faction   `json:"faction,omitempty"`
 }
 
 // Orbital represents an orbital body
@@ -275,19 +275,19 @@ type Modifier struct {
 
 // Chart represents waypoint chart information
 type Chart struct {
-	WaypointSymbol *string   `json:"waypointSymbol,omitempty"`
-	SubmittedBy    *string   `json:"submittedBy,omitempty"`
+	WaypointSymbol *string    `json:"waypointSymbol,omitempty"`
+	SubmittedBy    *string    `json:"submittedBy,omitempty"`
 	SubmittedOn    *time.Time `json:"submittedOn,omitempty"`
 }
 
 // Faction represents a SpaceTraders faction
 type Faction struct {
-	Symbol       string     `json:"symbol"`
-	Name         string     `json:"name"`
-	Description  string     `json:"description"`
-	Headquarters string     `json:"headquarters"`
+	Symbol       string         `json:"symbol"`
+	Name         string         `json:"name"`
+	Description  string         `json:"description"`
+	Headquarters string         `json:"headquarters"`
 	Traits       []FactionTrait `json:"traits"`
-	IsRecruiting bool       `json:"isRecruiting"`
+	IsRecruiting bool           `json:"isRecruiting"`
 }
 
 // FactionTrait represents a faction trait
@@ -299,11 +299,11 @@ type FactionTrait struct {
 
 // Survey represents a mining survey
 type Survey struct {
-	Signature   string        `json:"signature"`
-	Symbol      string        `json:"symbol"`
-	Deposits    []SurveyDeposit `json:"deposits"`
-	Expiration  time.Time     `json:"expiration"`
-	Size        string        `json:"size"`
+	Signature  string          `json:"signature"`
+	Symbol     string          `json:"symbol"`
+	Deposits   []SurveyDeposit `json:"deposits"`
+	Expiration time.Time       `json:"expiration"`
+	Size       string          `json:"size"`
 }
 
 // SurveyDeposit represents a deposit found in a survey
@@ -313,7 +313,7 @@ type SurveyDeposit struct {
 
 // Extraction represents a resource extraction result
 type Extraction struct {
-	ShipSymbol string      `json:"shipSymbol"`
+	ShipSymbol string          `json:"shipSymbol"`
 	Yield      ExtractionYield `json:"yield"`
 }
 
@@ -338,8 +338,8 @@ type Meta struct {
 
 // APIError represents an API error response
 type APIError struct {
-	Message string            `json:"message"`
-	Code    int               `json:"code"`
+	Message string                 `json:"message"`
+	Code    int                    `json:"code"`
 	Data    map[string]interface{} `json:"data,omitempty"`
 }
 

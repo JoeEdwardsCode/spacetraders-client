@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/JoeEdwardsCode/spacetraders-client/pkg/client"
+	"github.com/JoeEdwardsCode/spacetraders-client/pkg/mock"
 	"log"
-	"spacetraders-client/pkg/client"
-	"spacetraders-client/pkg/mock"
 	"time"
 )
 
@@ -77,7 +77,7 @@ func main() {
 	// Test 4: Rate limiting (disable first to see it work)
 	fmt.Println("\n4. Testing without rate limiting...")
 	mockServer.SetRateLimitEnabled(false)
-	
+
 	successCount := 0
 	for i := 0; i < 5; i++ {
 		_, err := client.GetAgent(ctx)
@@ -90,7 +90,7 @@ func main() {
 	// Test 5: Enable rate limiting
 	fmt.Println("\n5. Testing with rate limiting...")
 	mockServer.SetRateLimitEnabled(true)
-	
+
 	successCount = 0
 	limitedCount := 0
 	for i := 0; i < 35; i++ {

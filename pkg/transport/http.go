@@ -6,11 +6,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/JoeEdwardsCode/spacetraders-client/internal/ratelimit"
+	"github.com/JoeEdwardsCode/spacetraders-client/pkg/schema"
 	"io"
 	"net/http"
 	"net/url"
-	"spacetraders-client/internal/ratelimit"
-	"spacetraders-client/pkg/schema"
 	"strconv"
 	"strings"
 	"time"
@@ -191,7 +191,7 @@ func (c *HTTPClient) buildRequest(ctx context.Context, req *Request) (*http.Requ
 func (c *HTTPClient) handleRateLimitResponse(resp *http.Response) error {
 	retryAfterHeader := resp.Header.Get("Retry-After")
 	rateLimitType := resp.Header.Get("x-ratelimit-type")
-	
+
 	var retryAfter time.Duration
 	if retryAfterHeader != "" {
 		if seconds, err := strconv.Atoi(retryAfterHeader); err == nil {
@@ -251,17 +251,17 @@ func parseTimeHeader(value string) time.Time {
 	if value == "" {
 		return time.Time{}
 	}
-	
+
 	// Try parsing as Unix timestamp
 	if timestamp, err := strconv.ParseInt(value, 10, 64); err == nil {
 		return time.Unix(timestamp, 0)
 	}
-	
+
 	// Try parsing as RFC3339
 	if t, err := time.Parse(time.RFC3339, value); err == nil {
 		return t
 	}
-	
+
 	return time.Time{}
 }
 

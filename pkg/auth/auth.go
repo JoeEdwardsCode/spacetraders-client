@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"spacetraders-client/pkg/schema"
-	"spacetraders-client/pkg/transport"
+	"github.com/JoeEdwardsCode/spacetraders-client/pkg/schema"
+	"github.com/JoeEdwardsCode/spacetraders-client/pkg/transport"
 	"strings"
 	"sync"
 	"time"
@@ -99,7 +99,7 @@ func (a *AuthManager) RegisterAgent(ctx context.Context, callSign, faction strin
 func (a *AuthManager) SetToken(token string) {
 	a.mutex.Lock()
 	defer a.mutex.Unlock()
-	
+
 	a.token = token
 	a.httpClient.SetToken(token)
 }
@@ -108,7 +108,7 @@ func (a *AuthManager) SetToken(token string) {
 func (a *AuthManager) GetToken() string {
 	a.mutex.RLock()
 	defer a.mutex.RUnlock()
-	
+
 	return a.token
 }
 
@@ -116,7 +116,7 @@ func (a *AuthManager) GetToken() string {
 func (a *AuthManager) IsAuthenticated() bool {
 	a.mutex.RLock()
 	defer a.mutex.RUnlock()
-	
+
 	return a.token != "" && !a.isTokenExpired()
 }
 
@@ -166,7 +166,7 @@ func (a *AuthManager) RefreshAgent(ctx context.Context) (*schema.Agent, error) {
 	a.mutex.Lock()
 	a.agent = nil // Clear cache
 	a.mutex.Unlock()
-	
+
 	return a.GetAgent(ctx)
 }
 
@@ -196,7 +196,7 @@ func (a *AuthManager) ValidateToken(ctx context.Context) error {
 func (a *AuthManager) ClearAuth() {
 	a.mutex.Lock()
 	defer a.mutex.Unlock()
-	
+
 	a.token = ""
 	a.agent = nil
 	a.httpClient.SetToken("")
@@ -206,11 +206,11 @@ func (a *AuthManager) ClearAuth() {
 func (a *AuthManager) GetAuthHeader() string {
 	a.mutex.RLock()
 	defer a.mutex.RUnlock()
-	
+
 	if a.token == "" {
 		return ""
 	}
-	
+
 	return "Bearer " + a.token
 }
 
@@ -221,14 +221,14 @@ func isValidCallSign(callSign string) bool {
 	if len(callSign) < 3 || len(callSign) > 14 {
 		return false
 	}
-	
+
 	for _, r := range callSign {
-		if !((r >= 'A' && r <= 'Z') || (r >= 'a' && r <= 'z') || 
-			 (r >= '0' && r <= '9') || r == '_') {
+		if !((r >= 'A' && r <= 'Z') || (r >= 'a' && r <= 'z') ||
+			(r >= '0' && r <= '9') || r == '_') {
 			return false
 		}
 	}
-	
+
 	return true
 }
 
@@ -241,13 +241,13 @@ func isValidFaction(faction string) bool {
 		"SOLITARY", "COBALT", "OMEGA", "ECHO", "LORDS",
 		"CULT", "ANCIENTS", "SHADOW", "ETHERIC",
 	}
-	
+
 	for _, valid := range validFactions {
 		if strings.EqualFold(faction, valid) {
 			return true
 		}
 	}
-	
+
 	return false
 }
 
@@ -264,12 +264,12 @@ func parseRegistrationResponse(data interface{}) (*schema.RegisterAgentResponse,
 	if err != nil {
 		return nil, err
 	}
-	
+
 	var regResp schema.RegisterAgentResponse
 	if err := json.Unmarshal(jsonData, &regResp); err != nil {
 		return nil, err
 	}
-	
+
 	return &regResp, nil
 }
 
@@ -279,21 +279,21 @@ func parseAgentData(data interface{}) (*schema.Agent, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	var agent schema.Agent
 	if err := json.Unmarshal(jsonData, &agent); err != nil {
 		return nil, err
 	}
-	
+
 	return &agent, nil
 }
 
 // TokenInfo represents information about the current token
 type TokenInfo struct {
-	HasToken    bool      `json:"has_token"`
-	IsValid     bool      `json:"is_valid"`
+	HasToken    bool          `json:"has_token"`
+	IsValid     bool          `json:"is_valid"`
 	Agent       *schema.Agent `json:"agent,omitempty"`
-	LastChecked time.Time `json:"last_checked"`
+	LastChecked time.Time     `json:"last_checked"`
 }
 
 // GetTokenInfo returns information about the current authentication state
@@ -302,7 +302,7 @@ func (a *AuthManager) GetTokenInfo(ctx context.Context) *TokenInfo {
 		HasToken:    a.GetToken() != "",
 		LastChecked: time.Now(),
 	}
-	
+
 	if info.HasToken {
 		agent, err := a.GetAgent(ctx)
 		if err == nil {
@@ -310,6 +310,6 @@ func (a *AuthManager) GetTokenInfo(ctx context.Context) *TokenInfo {
 			info.Agent = agent
 		}
 	}
-	
+
 	return info
 }

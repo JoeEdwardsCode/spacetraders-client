@@ -1,11 +1,65 @@
+// Package client provides a comprehensive Go client for the SpaceTraders API.
+//
+// SpaceTraders is a space trading game where players create agents, manage fleets,
+// trade goods, complete contracts, and explore the universe. This client provides
+// a complete interface to interact with the SpaceTraders API.
+//
+// Basic usage:
+//
+//	import "github.com/JoeEdwardsCode/spacetraders-client/pkg/client"
+//
+//	// Create a new client
+//	config := client.DefaultConfig()
+//	client, err := client.New(config)
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//	defer client.Close()
+//
+//	// Register a new agent
+//	ctx := context.Background()
+//	resp, err := client.RegisterAgent(ctx, "MY_AGENT", "COSMIC")
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	// Get agent information
+//	agent, err := client.GetAgent(ctx)
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	// Get fleet information
+//	ships, err := client.GetFleet(ctx, nil)
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+// The client provides comprehensive support for:
+//   - Agent registration and management
+//   - Fleet operations (ships, navigation, fuel)
+//   - Market operations (buying, selling cargo)
+//   - Contract management and fulfillment
+//   - System and waypoint exploration
+//   - Mining and survey operations
+//   - Faction information
+//   - Authentication and rate limiting
+//
+// Features:
+//   - Automatic rate limiting following API guidelines
+//   - Comprehensive error handling with typed errors
+//   - Context support for timeouts and cancellation
+//   - Mock server for testing and development
+//   - Thread-safe operations with proper synchronization
+//   - Configurable HTTP timeouts and retry logic
 package client
 
 import (
 	"context"
-	"spacetraders-client/pkg/auth"
-	"spacetraders-client/pkg/endpoints"
-	"spacetraders-client/pkg/schema"
-	"spacetraders-client/pkg/transport"
+	"github.com/JoeEdwardsCode/spacetraders-client/pkg/auth"
+	"github.com/JoeEdwardsCode/spacetraders-client/pkg/endpoints"
+	"github.com/JoeEdwardsCode/spacetraders-client/pkg/schema"
+	"github.com/JoeEdwardsCode/spacetraders-client/pkg/transport"
 	"time"
 )
 
@@ -18,10 +72,10 @@ type SpaceTradersClient struct {
 
 // Config represents client configuration
 type Config struct {
-	BaseURL     string
-	Timeout     time.Duration
-	UserAgent   string
-	Token       string // Optional: pre-existing token
+	BaseURL   string
+	Timeout   time.Duration
+	UserAgent string
+	Token     string // Optional: pre-existing token
 }
 
 // DefaultConfig returns a default client configuration

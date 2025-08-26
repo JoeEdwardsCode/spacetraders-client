@@ -2,11 +2,11 @@ package integration
 
 import (
 	"context"
+	"github.com/JoeEdwardsCode/spacetraders-client/pkg/client"
+	"github.com/JoeEdwardsCode/spacetraders-client/pkg/mock"
+	"github.com/JoeEdwardsCode/spacetraders-client/pkg/transport"
 	"testing"
 	"time"
-	"spacetraders-client/pkg/client"
-	"spacetraders-client/pkg/mock"
-	"spacetraders-client/pkg/transport"
 )
 
 func TestClientIntegration(t *testing.T) {
@@ -217,7 +217,7 @@ func testRateLimiting(t *testing.T, ctx context.Context, clientInstance *client.
 	// Test the rate limiter functionality by checking if rate limiting is properly configured
 	// Since client-side rate limiting uses Wait() (which blocks), we test server-side rate limiting
 	// by making rapid requests and checking if we can observe the rate limiting behavior
-	
+
 	successCount := 0
 	errorCount := 0
 
@@ -271,12 +271,12 @@ func TestClientEdgeCases(t *testing.T) {
 	t.Run("Invalid Call Sign", func(t *testing.T) {
 		// Test invalid call sign formats
 		invalidCallSigns := []string{
-			"",        // Empty
-			"AB",      // Too short
+			"",                 // Empty
+			"AB",               // Too short
 			"ABCDEFGHIJKLMNOP", // Too long
-			"ABC-123", // Invalid character
-			"abc 123", // Space
-			"123@456", // Invalid character
+			"ABC-123",          // Invalid character
+			"abc 123",          // Space
+			"123@456",          // Invalid character
 		}
 
 		for _, callSign := range invalidCallSigns {
@@ -327,15 +327,15 @@ func TestClientEdgeCases(t *testing.T) {
 func TestClientConfiguration(t *testing.T) {
 	t.Run("Default Config", func(t *testing.T) {
 		config := client.DefaultConfig()
-		
+
 		if config.BaseURL == "" {
 			t.Error("Default config should have base URL")
 		}
-		
+
 		if config.Timeout <= 0 {
 			t.Error("Default config should have positive timeout")
 		}
-		
+
 		if config.UserAgent == "" {
 			t.Error("Default config should have user agent")
 		}

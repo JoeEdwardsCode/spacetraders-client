@@ -2,8 +2,8 @@ package codegen
 
 import (
 	"fmt"
+	"github.com/JoeEdwardsCode/spacetraders-client/tools/fetcher"
 	"strings"
-	"spacetraders-client/tools/fetcher"
 )
 
 // Generator handles Go code generation from OpenAPI specifications
@@ -23,7 +23,7 @@ func (g *Generator) GenerateTypes() (string, error) {
 	}
 
 	var builder strings.Builder
-	
+
 	// Package header
 	builder.WriteString("// Code generated from OpenAPI specification. DO NOT EDIT.\n\n")
 	builder.WriteString("package schema\n\n")
@@ -44,31 +44,31 @@ func (g *Generator) GenerateTypes() (string, error) {
 // generateStruct generates a Go struct from an OpenAPI schema
 func (g *Generator) generateStruct(name string, schema fetcher.Schema) string {
 	var builder strings.Builder
-	
+
 	// Add documentation if available
 	if schema.Description != "" {
 		builder.WriteString(fmt.Sprintf("// %s %s\n", name, schema.Description))
 	}
-	
+
 	builder.WriteString(fmt.Sprintf("type %s struct {\n", toGoTypeName(name)))
-	
+
 	// Generate fields
 	for fieldName, fieldSchema := range schema.Properties {
 		fieldType := g.mapToGoType(fieldSchema)
 		jsonTag := fmt.Sprintf("`json:\"%s\"`", fieldName)
-		
+
 		// Check if field is required
 		isRequired := contains(schema.Required, fieldName)
 		if !isRequired && fieldType != "string" && fieldType != "bool" {
 			fieldType = "*" + fieldType // Make non-required fields pointers
 		}
-		
-		builder.WriteString(fmt.Sprintf("\t%s %s %s\n", 
+
+		builder.WriteString(fmt.Sprintf("\t%s %s %s\n",
 			toGoFieldName(fieldName), fieldType, jsonTag))
 	}
-	
+
 	builder.WriteString("}")
-	
+
 	return builder.String()
 }
 
@@ -105,30 +105,30 @@ func (g *Generator) mapToGoType(schema fetcher.Schema) string {
 		}
 		return "map[string]interface{}"
 	}
-	
+
 	// Handle $ref references
 	if schema.Ref != "" {
 		return toGoTypeName(extractRefName(schema.Ref))
 	}
-	
+
 	return "interface{}"
 }
 
 // GenerateEndpoints generates Go methods for API endpoints
 func (g *Generator) GenerateEndpoints() (string, error) {
 	var builder strings.Builder
-	
+
 	builder.WriteString("// Code generated from OpenAPI specification. DO NOT EDIT.\n\n")
 	builder.WriteString("package endpoints\n\n")
 	builder.WriteString("import (\n")
 	builder.WriteString("\t\"context\"\n")
-	builder.WriteString("\t\"spacetraders-client/pkg/schema\"\n")
+	builder.WriteString("\t\"github.com/JoeEdwardsCode/spacetraders-client/pkg/schema\"\n")
 	builder.WriteString(")\n\n")
-	
+
 	// Generate interface
 	builder.WriteString("// SpaceTradersAPI defines all API operations\n")
 	builder.WriteString("type SpaceTradersAPI interface {\n")
-	
+
 	for path, pathItem := range g.spec.Paths {
 		if pathItem.Get != nil {
 			method := g.generateMethodSignature(path, "GET", pathItem.Get)
@@ -151,9 +151,9 @@ func (g *Generator) GenerateEndpoints() (string, error) {
 			builder.WriteString("\t" + method + "\n")
 		}
 	}
-	
+
 	builder.WriteString("}\n")
-	
+
 	return builder.String(), nil
 }
 
@@ -163,20 +163,20 @@ func (g *Generator) generateMethodSignature(path, method string, op *fetcher.Ope
 	if methodName == "" {
 		methodName = generateMethodName(method, path)
 	}
-	
+
 	// Build parameters
 	var params []string
 	params = append(params, "ctx context.Context")
-	
+
 	// Add path parameters
 	for _, param := range op.Parameters {
 		if param.In == "path" {
 			goType := mapParamToGoType(param.Schema)
-			params = append(params, fmt.Sprintf("%s %s", 
+			params = append(params, fmt.Sprintf("%s %s",
 				toGoParamName(param.Name), goType))
 		}
 	}
-	
+
 	// Add query parameters as options struct
 	hasQueryParams := false
 	for _, param := range op.Parameters {
@@ -188,12 +188,12 @@ func (g *Generator) generateMethodSignature(path, method string, op *fetcher.Ope
 	if hasQueryParams {
 		params = append(params, "opts *QueryOptions")
 	}
-	
+
 	// Add request body if present
 	if op.RequestBody != nil {
 		params = append(params, "body interface{}")
 	}
-	
+
 	// Determine return type
 	returnType := "error"
 	for code, response := range op.Responses {
@@ -204,7 +204,7 @@ func (g *Generator) generateMethodSignature(path, method string, op *fetcher.Ope
 			}
 		}
 	}
-	
+
 	paramStr := strings.Join(params, ", ")
 	return fmt.Sprintf("%s(%s) %s", methodName, paramStr, returnType)
 }
@@ -231,7 +231,7 @@ func toPascalCase(s string) string {
 	words := strings.FieldsFunc(s, func(r rune) bool {
 		return r == '_' || r == '-' || r == ' '
 	})
-	
+
 	var result strings.Builder
 	for _, word := range words {
 		if len(word) > 0 {
@@ -285,15 +285,15 @@ func mapParamToGoType(schema fetcher.Schema) string {
 func generateMethodName(httpMethod, path string) string {
 	method := strings.ToLower(httpMethod)
 	pathParts := strings.Split(strings.Trim(path, "/"), "/")
-	
+
 	var name strings.Builder
 	name.WriteString(strings.Title(method))
-	
+
 	for _, part := range pathParts {
 		if !strings.HasPrefix(part, "{") {
 			name.WriteString(toPascalCase(part))
 		}
 	}
-	
+
 	return name.String()
 }

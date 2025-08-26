@@ -20,8 +20,8 @@ type TokenBucket struct {
 func NewTokenBucket() *TokenBucket {
 	now := time.Now()
 	return &TokenBucket{
-		capacity:   30,                // 30 request burst limit
-		tokens:     30,                // Start with full bucket
+		capacity:   30,                     // 30 request burst limit
+		tokens:     30,                     // Start with full bucket
 		refillRate: 500 * time.Millisecond, // 2 per second = 500ms per token
 		lastRefill: now,
 		mutex:      sync.Mutex{},
@@ -46,16 +46,16 @@ func (tb *TokenBucket) Wait(ctx context.Context) error {
 		if tb.Allow() {
 			return nil
 		}
-		
+
 		// Calculate wait time until next token
 		tb.mutex.Lock()
 		waitTime := tb.refillRate - time.Since(tb.lastRefill)
 		tb.mutex.Unlock()
-		
+
 		if waitTime <= 0 {
 			waitTime = tb.refillRate // Minimum wait
 		}
-		
+
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
@@ -69,14 +69,14 @@ func (tb *TokenBucket) Wait(ctx context.Context) error {
 func (tb *TokenBucket) Allow() bool {
 	tb.mutex.Lock()
 	defer tb.mutex.Unlock()
-	
+
 	tb.refill()
-	
+
 	if tb.tokens > 0 {
 		tb.tokens--
 		return true
 	}
-	
+
 	return false
 }
 
@@ -84,14 +84,14 @@ func (tb *TokenBucket) Allow() bool {
 func (tb *TokenBucket) TryAllow() bool {
 	tb.mutex.Lock()
 	defer tb.mutex.Unlock()
-	
+
 	tb.refill()
-	
+
 	if tb.tokens > 0 {
 		tb.tokens--
 		return true
 	}
-	
+
 	return false
 }
 
@@ -99,7 +99,7 @@ func (tb *TokenBucket) TryAllow() bool {
 func (tb *TokenBucket) Reset() {
 	tb.mutex.Lock()
 	defer tb.mutex.Unlock()
-	
+
 	tb.tokens = tb.capacity
 	tb.lastRefill = time.Now()
 }
@@ -108,9 +108,9 @@ func (tb *TokenBucket) Reset() {
 func (tb *TokenBucket) GetState() BucketState {
 	tb.mutex.Lock()
 	defer tb.mutex.Unlock()
-	
+
 	tb.refill()
-	
+
 	return BucketState{
 		Tokens:     tb.tokens,
 		Capacity:   tb.capacity,
@@ -123,10 +123,10 @@ func (tb *TokenBucket) GetState() BucketState {
 func (tb *TokenBucket) refill() {
 	now := time.Now()
 	elapsed := now.Sub(tb.lastRefill)
-	
+
 	// Calculate how many tokens to add based on elapsed time
 	tokensToAdd := int(elapsed / tb.refillRate)
-	
+
 	if tokensToAdd > 0 {
 		tb.tokens += tokensToAdd
 		if tb.tokens > tb.capacity {
@@ -149,14 +149,14 @@ func (bs BucketState) AvailableIn() time.Duration {
 	if bs.Tokens > 0 {
 		return 0
 	}
-	
+
 	nextRefill := bs.LastRefill.Add(bs.RefillRate)
 	waitTime := time.Until(nextRefill)
-	
+
 	if waitTime < 0 {
 		return 0
 	}
-	
+
 	return waitTime
 }
 
